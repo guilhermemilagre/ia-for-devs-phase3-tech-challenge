@@ -1,0 +1,8 @@
+# Dependencias exclusivas do fine-tuning (rodar no Colab/GPU).
+# Instalar com: pip install -r finetuning/requirements.txt
+transformers>=4.44
+peft>=0.12
+bitsandbytes>=0.43
+accelerate>=0.33
+datasets>=2.20
+torch

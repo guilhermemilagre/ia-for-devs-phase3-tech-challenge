@@ -1,0 +1,67 @@
+FROM ./assistente-medico.gguf
+
+# Template ChatML completo do Qwen2.5 (com secao de tool-calling), copiado de
+# `ollama show qwen2.5:1.5b --modelfile` em 2026-09-13. O Modelfile original
+# deste projeto usava so `TEMPLATE {{ .Prompt }}` (passthrough cru, sem
+# formatacao de chat nem tools) - funcionava para conversas simples porque o
+# SYSTEM ainda era aplicado à parte, mas isso significava que bind_tools()
+# do LangChain nunca conseguia fazer o modelo emitir uma chamada de
+# ferramenta de verdade (o agente de pesquisa livre em
+# assistant/src/research_agent.py so respondia em texto, nunca chamava
+# buscar_protocolo/consultar_paciente). Com este template, o mesmo GGUF
+# (mesmos pesos, mesmo fine-tuning LoRA) passa a suportar tool-calling.
+TEMPLATE """{{- if .Messages }}
+{{- if or .System .Tools }}<|im_start|>system
+{{- if .System }}
+{{ .System }}
+{{- end }}
+{{- if .Tools }}
+
+# Tools
+
+You may call one or more functions to assist with the user query.
+
+You are provided with function signatures within <tools></tools> XML tags:
+<tools>
+{{- range .Tools }}
+{"type": "function", "function": {{ .Function }}}
+{{- end }}
+</tools>
+
+For each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:
+<tool_call>
+{"name": <function-name>, "arguments": <args-json-object>}
+</tool_call>
+{{- end }}<|im_end|>
+{{ end }}
+{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 -}}
+{{- if eq .Role "user" }}<|im_start|>user
+{{ .Content }}<|im_end|>
+{{ else if eq .Role "assistant" }}<|im_start|>assistant
+{{ if .Content }}{{ .Content }}
+{{- else if .ToolCalls }}<tool_call>
+{{ range .ToolCalls }}{"name": "{{ .Function.Name }}", "arguments": {{ .Function.Arguments }}}
+{{ end }}</tool_call>
+{{- end }}{{ if not $last }}<|im_end|>
+{{ end }}
+{{- else if eq .Role "tool" }}<|im_start|>user
+<tool_response>
+{{ .Content }}
+</tool_response><|im_end|>
+{{ end }}
+{{- if and (ne .Role "assistant") $last }}<|im_start|>assistant
+{{ end }}
+{{- end }}
+{{- else }}
+{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{ if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+{{ end }}{{ .Response }}{{ if .Response }}<|im_end|>{{ end }}"""
+
+PARAMETER temperature 0.2
+PARAMETER num_ctx 4096
+
+SYSTEM """Voce e um assistente medico de apoio a decisao clinica. Use APENAS as informacoes de contexto fornecidas. Nunca prescreva uma conduta como definitiva - sempre trate como sugestao sujeita a validacao humana."""

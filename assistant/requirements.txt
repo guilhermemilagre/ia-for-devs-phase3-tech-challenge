@@ -1,0 +1,19 @@
+# Dependencias do assistente (uso local, --backend ollama - sem GPU CUDA).
+# Instalar com: pip install -r assistant/requirements.txt
+langchain>=0.2
+langgraph>=0.2
+langchain-community
+langchain-huggingface
+sentence-transformers
+faiss-cpu
+grandalf
+jq  # requerido por langchain_community.document_loaders.JSONLoader
+langchain-ollama
+fastapi
+uvicorn
+streamlit
+requests  # usado pelo app Streamlit para chamar a API
+
+# Nota: --backend huggingface (carregar o modelo base+LoRA direto via Transformers,
+# sem passar pelo Ollama) tambem precisa de transformers+peft+torch -
+# ver finetuning/requirements.txt. O uso local padrao (Windows/Ollama) nao precisa disso.

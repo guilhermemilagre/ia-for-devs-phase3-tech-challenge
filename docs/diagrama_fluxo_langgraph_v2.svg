@@ -1,0 +1,37 @@
+<svg width="680" height="720" viewBox="0 0 680 720" xmlns="http://www.w3.org/2000/svg">
+<title>Fluxo LangGraph v2 com arestas condicionais</title>
+<desc>Fluxograma com roteamento condicional baseado em etapa_atual, checkpointer MemorySaver e caminho de erro direto para o fim.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#5f5e5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="240" y="20" width="200" height="50" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<text x="340" y="38" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#2C2C2A">Estado inicial</text>
+<text x="340" y="55" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">etapa_atual = "inicio"</text>
+<line x1="340" y1="70" x2="340" y2="110" stroke="#5f5e5a" stroke-width="0.5" marker-end="url(#arrow)"/>
+<rect x="220" y="112" width="240" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="340" y="132" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#04342C">verificar_exames</text>
+<text x="340" y="150" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#085041">Thought -&gt; Action -&gt; Observation</text>
+<text x="500" y="185" text-anchor="start" font-family="sans-serif" font-size="12" fill="#5F5E5A">deve_continuar(estado)</text>
+<line x1="340" y1="168" x2="340" y2="215" stroke="#5f5e5a" stroke-width="0.5" marker-end="url(#arrow)"/>
+<rect x="200" y="217" width="280" height="66" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="340" y="237" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#26215C">sugerir_conduta</text>
+<text x="340" y="255" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#3C3489">RAG: retrieve -&gt; filter -&gt; context</text>
+<text x="340" y="271" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#3C3489">+ LLM + guardrails</text>
+<line x1="340" y1="283" x2="340" y2="328" stroke="#5f5e5a" stroke-width="0.5" marker-end="url(#arrow)"/>
+<rect x="220" y="330" width="240" height="66" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text x="340" y="350" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#4A1B0C">emitir_alertas</text>
+<text x="340" y="368" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#712B13">exame critico pendente ou</text>
+<text x="340" y="384" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#712B13">guardrail acionado</text>
+<line x1="340" y1="396" x2="340" y2="440" stroke="#5f5e5a" stroke-width="0.5" marker-end="url(#arrow)"/>
+<rect x="270" y="442" width="140" height="44" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<text x="340" y="464" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#2C2C2A">fim (END)</text>
+<path d="M 220 140 C 100 200, 100 400, 270 460" fill="none" stroke="#993C1D" stroke-width="0.5" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<text x="60" y="300" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#712B13" transform="rotate(-90 60 300)">etapa_atual == "erro" -&gt; fim direto</text>
+<rect x="500" y="112" width="140" height="330" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text x="570" y="135" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="500" fill="#2C2C2A">MemorySaver</text>
+<text x="570" y="155" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5F5E5A">checkpointer</text>
+<text x="570" y="180" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5F5E5A">persiste o estado</text>
+<text x="570" y="198" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5F5E5A">por thread_id =</text>
+<text x="570" y="216" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5F5E5A">"paciente-{id}"</text>
+<text x="340" y="560" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5F5E5A">Cada aresta e resolvida em runtime pela funcao deve_continuar(estado),</text>
+<text x="340" y="578" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5F5E5A">que le etapa_atual -- nao e uma sequencia fixa de add_edge.</text>
+<text x="340" y="596" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5F5E5A">historico_decisoes registra cada Thought/Action/Observation (auditoria).</text>
+</svg>
